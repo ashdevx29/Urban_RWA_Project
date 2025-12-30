@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #FFFFFF;
+  color: #000000;
+}
+
+.dm {
+  font-family: "DM Sans";
+}

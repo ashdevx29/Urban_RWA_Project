@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import logo from '../assets/logo.png';
+import logo from '../assets/logo/Urban RWA Token/Urban RWA Token logo 3.png';
 import '../Styles/Header.css';
 
 function Navbar() {

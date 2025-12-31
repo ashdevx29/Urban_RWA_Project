@@ -1,5 +1,5 @@
 import "../Styles/Footer.css";
-import { NavLink } from "react-router-dom";
+import { Link } from "react-router-dom";
 import logo from "../assets/foo-logo.png";
 
 import { FaXTwitter, FaFacebookF, FaInstagram } from "react-icons/fa6";
@@ -37,17 +37,17 @@ export default function Footer() {
 
           {/* Menu */}
           <ul className="footer-menu">
-            <li><NavLink to="/" end>Home</NavLink></li>
-            <li><NavLink to="/about">About Us</NavLink></li>
-            <li><NavLink to="/contact">Contact Us</NavLink></li>
-            <li><NavLink to="/privacy-policy">Privacy Policy</NavLink></li>
-            <li><NavLink to="/services">Services</NavLink></li>
+            <li><Link to="/" end>Home</Link></li>
+            <li><Link to="/about">About Us</Link></li>
+            <li><Link to="/contact">Contact Us</Link></li>
+            <li><Link to="/privacy-policy">Privacy Policy</Link></li>
+            <li><Link to="/services">Services</Link></li>
           </ul>
 
           {/* Contact */}
           <div className="footer-contact">
-            <p>+12345678990</p>
-            <p>urbanrwa@gmail.com</p>
+            <p>+995 51000 2291</p>
+            <p>info@urbanrwa.io</p>
           </div>
 
         </div>
@@ -57,8 +57,8 @@ export default function Footer() {
       <div className="footer-bottom border-top-gradient">
         <span>©2025 URBAN RWA. All rights reserved</span>
         <div>
-          <NavLink to="/privacy-policy">Privacy Policy</NavLink>
-          <NavLink to="/terms">Terms of Use</NavLink>
+          <Link to="/privacy-policy">Privacy Policy</Link>
+          <Link to="/terms">Terms of Use</Link>
         </div>
       </div>
 

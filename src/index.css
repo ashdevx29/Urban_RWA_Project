@@ -3,10 +3,19 @@
 body {
   margin: 0;
   padding: 0;
-  background-color: #FFFFFF;
-  color: #000000;
+  /* background-color: #FFFFFF; */
+  /* color: #000000; */
 }
 
 .dm {
   font-family: "DM Sans";
+}
+
+.lato {
+  font-family: "Lato";
+}
+
+
+.input {
+  @apply mt-2 w-full h-10 rounded-[4px] bg-[#ffffff] px-3 outline-none shadow-[0px_0px_5px_0px_rgba(0,0,0,0.2)] shadow-[inset_0px_0px_2px_1px_rgba(0,0,0,0.25)] ;
 }

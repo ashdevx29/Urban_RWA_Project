@@ -3,6 +3,7 @@ import { FaAngleDown, FaAngleUp } from "react-icons/fa";
 import { IoSearchSharp } from "react-icons/io5";
 import "../Styles/S1Hero.css";
 import heroImg from "../assets/hero/heroo.png";
+import { Link } from 'react-router-dom';
 
 
 const locations = ["New York", "California", "Texas", "Florida", "Georgia", "Nevada"];
@@ -27,7 +28,24 @@ export default function Hero() {
     <>
        <section className="hero">
       {/* LEFT */}
-      <div className="hero-left">
+
+      <div className="hero-up">
+        <h2 className="h2-hero">Bridging <span>Real Estate</span> with Compliant Web3 Solutions</h2>
+
+        <div className="buttons">
+             <Link
+                to="/" className ="find-btn">
+            Find Properties
+          </Link>
+           <Link
+                to="https://urbanrwa.gitbook.io/urbanrwa-docs/" target="blank" className ="wht-btn">
+            Whitepaper
+          </Link>
+        </div>
+      </div>
+
+
+      {/* <div className="hero-left">
         <h2 className="hero-h2">
           Bridging Real Estate with Compliant Web3 Solutions
         </h2>
@@ -38,12 +56,11 @@ export default function Hero() {
         <button className="primary-btn">Find Properties</button>
       </div>
 
-      {/* RIGHT IMAGE */}
       <div className="hero-right">
         <div className="single-property">
           <img src={heroImg} alt="Property" />
         </div>
-      </div>
+      </div> */}
 
       {/* SEARCH BAR */}
       <div className="search-bar-main">

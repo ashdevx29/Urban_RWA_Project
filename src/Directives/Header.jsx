@@ -68,12 +68,12 @@ function Navbar() {
 
         <button className="buy-token-btn">
           <a
-            href="/login"
+            href="/buy"
             target="_blank"
             rel="noopener noreferrer"
             style={{ textDecoration: 'none', color: '#FFFFFF', fontFamily: 'DM Sans' }}
           >
-            Login
+            Buy Now
           </a>
         </button>
 

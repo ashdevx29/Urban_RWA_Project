@@ -1,9 +1,10 @@
 .hero {
   position: relative;
-  max-width: 1240px;
-  min-height: 100vh;
-  margin: 40px auto 120px auto;
-  padding: 80px 40px;
+  max-width: 1280px;
+  min-height: 95vh;
+  /* margin: 30px auto 120px auto; */
+   margin: 30px auto 60px auto;
+  padding: 80px 60px 160px 60px;
   border-radius: 40px;
   background: linear-gradient(90deg, #2460F5 0%, #3B1DDA 100%);
   display: flex;
@@ -18,7 +19,7 @@
   bottom: 50px;
   left: 0;
   width: 100%;
-  height: 336px;
+  height: 326px;
   background: url("../assets/hero/city.png") repeat-x;
   pointer-events: none;
 }
@@ -50,12 +51,13 @@ vertical-align: middle;
   font-size: 16px;
   line-height: 140%;
   color: #ffffff;
+  
 }
 
 .primary-btn {
   background: #ffffff;
   color: #363636;
-  padding: 8px 36px;
+  padding: 8px 46px;
   border-radius: 38px;
   border: none;
   font-family: "DM Sans";
@@ -98,6 +100,7 @@ vertical-align: middle;
   background: linear-gradient(90deg, #2460F5 0%, #3B1DDA 100%);
   border: 1px solid #B7CAFF63;
   z-index: 10;
+  display: none;
 }
 
 .search-bar {

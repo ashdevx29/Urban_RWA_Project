@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import axios from "axios";
 
 import leftImg from "../../assets/Auth/auth.png";
 import rightBg from "../../assets/Auth/right-bg.png";
@@ -9,9 +10,11 @@ import { FaUser, FaIdBadge, FaAt } from "react-icons/fa";
 import { LiaEye } from "react-icons/lia";
 import { TbEyeClosed } from "react-icons/tb";
 import { IoIosPhonePortrait } from "react-icons/io";
+import { baseUrl } from "../../config/config";
 
 export default function Signup() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [form, setForm] = useState({
     referral: "",
@@ -28,6 +31,16 @@ export default function Signup() {
   const [errors, setErrors] = useState({});
   const [formMessage, setFormMessage] = useState("");
   const [formSuccess, setFormSuccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  /* PREFILL REFERRAL FROM QUERY PARAM */
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const referralParam = params.get("referral");
+    if (referralParam) {
+      setForm((prev) => ({ ...prev, referral: referralParam }));
+    }
+  }, [location.search]);
 
   /* HANDLE INPUT CHANGE */
   const handleChange = (e) => {
@@ -81,7 +94,7 @@ export default function Signup() {
   };
 
   /* SUBMIT */
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validate()) {
@@ -90,12 +103,41 @@ export default function Signup() {
       return;
     }
 
-    setFormSuccess(true);
-    setFormMessage("Signup successful! Redirecting to OTP verification...");
+    const data = {
+      sponsor_id: form.referral,
+      first_name: form.firstName,
+      last_name: form.lastName,
+      country: form.country,
+      email: form.email,
+      password: form.password,
+      repeat_password: form.confirmPassword,
+      // Note: 'phone' is not sent to the API as the backend does not expect it.
+      // If needed, update the backend User model and controller to include it.
+    };
 
-    setTimeout(() => {
-      navigate("/signup-otp");
-    }, 1200);
+    setIsLoading(true);
+    setFormMessage("");
+    setFormSuccess(false);
+
+    try {
+      const response = await axios.post(`${baseUrl}/api/auth/signup`, data);
+      const result = response.data;
+
+      setFormSuccess(true);
+      setFormMessage(result.message || "Signup successful! Redirecting to OTP verification...");
+
+      // Navigate to OTP page, passing email or user_id for verification
+      // (OTP page can use this to verify with type: 'signup')
+      setTimeout(() => {
+        navigate("/signup-otp", { state: { email: form.email, user_id: result.user_id } });
+      }, 1200);
+    } catch (error) {
+      setFormSuccess(false);
+      setFormMessage(error.response?.data?.message || "Signup failed. Please try again.");
+      console.error("Signup error:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -266,15 +308,17 @@ export default function Signup() {
             {/* Button */}
             <button
               type="submit"
-              className="
+              disabled={isLoading}
+              className={`
                 w-full h-12 rounded-md
                 bg-gradient-to-r from-[#2460F5] to-[#3B1DDA]
                 hover:from-[#1E4ED8] hover:to-[#2E16B8]
                 text-white font-medium
                 transition-all duration-300
-              "
+                ${isLoading ? 'opacity-75 cursor-not-allowed' : ''}
+              `}
             >
-              Sign Up
+              {isLoading ? 'Signing Up...' : 'Sign Up'}
             </button>
 
             {/* Sign In */}

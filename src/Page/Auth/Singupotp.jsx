@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
+
 import popupBg from "../../assets/Auth/pop.jpg";
 import picon from "../../assets/Auth/icon.png"
 
@@ -7,16 +9,21 @@ import leftImg from "../../assets/Auth/auth.png";
 import rightBg from "../../assets/Auth/right-bg.png";
 import logo from "../../assets/logo/Urban RWA Token/Urban RWA Token logo 3.png";
 
+import { baseUrl } from "../../config/config";
+
 export default function SignupOtp() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { email, user_id } = location.state || { email: "", user_id: "" };
 
   const OTP_LENGTH = 6;
-  const CORRECT_OTP = "123456"; // demo OTP
 
   const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(""));
   const [error, setError] = useState("");
   const [timer, setTimer] = useState(30);
   const [showPopup, setShowPopup] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
 
   const inputsRef = useRef([]);
 
@@ -51,7 +58,7 @@ export default function SignupOtp() {
   };
 
   /* VERIFY OTP */
-  const handleVerify = () => {
+  const handleVerify = async () => {
     const enteredOtp = otp.join("");
 
     if (enteredOtp.length < OTP_LENGTH) {
@@ -59,25 +66,57 @@ export default function SignupOtp() {
       return;
     }
 
-    if (enteredOtp !== CORRECT_OTP) {
-      setError("Invalid OTP. Please try again.");
-      return;
+    const data = {
+      email,
+      otp: enteredOtp,
+      type: "signup",
+    };
+
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const response = await axios.post(`${baseUrl}/api/auth/verify-user`, data);
+      const result = response.data;
+
+      // SUCCESS
+      localStorage.setItem("token", result.token);
+      setShowPopup(true);
+
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 2000);
+    } catch (error) {
+      setError(error.response?.data?.message || "Invalid OTP. Please try again.");
+      console.error("Verification error:", error);
+    } finally {
+      setIsLoading(false);
     }
-
-    // SUCCESS
-    setShowPopup(true);
-
-    setTimeout(() => {
-      navigate("/dashboard");
-    }, 2000);
   };
 
   /* RESEND OTP */
-  const handleResend = () => {
-    setOtp(Array(OTP_LENGTH).fill(""));
-    setTimer(30);
+  const handleResend = async () => {
+    const data = {
+      email,
+      type: "signup",
+    };
+
+    setResendLoading(true);
     setError("");
-    inputsRef.current[0].focus();
+
+    try {
+      const response = await axios.post(`${baseUrl}/api/auth/resend-otp`, data);
+      const result = response.data;
+
+      setOtp(Array(OTP_LENGTH).fill(""));
+      setTimer(30);
+      inputsRef.current[0].focus();
+    } catch (error) {
+      setError(error.response?.data?.message || "Failed to resend OTP. Please try again.");
+      console.error("Resend error:", error);
+    } finally {
+      setResendLoading(false);
+    }
   };
 
   return (
@@ -151,14 +190,16 @@ export default function SignupOtp() {
           {/* BUTTON */}
           <button
             onClick={handleVerify}
-            className="
+            disabled={isLoading}
+            className={`
               w-full h-12 rounded-md
               bg-gradient-to-r from-[#2460F5] to-[#3B1DDA]
               text-white font-medium
               transition-all duration-300 mb-4
-            "
+              ${isLoading ? 'opacity-75 cursor-not-allowed' : ''}
+            `}
           >
-            Get OTP
+            {isLoading ? 'Verifying...' : 'Verify OTP'}
           </button>
 
           {/* RESEND */}
@@ -169,9 +210,9 @@ export default function SignupOtp() {
           ) : (
             <p
               onClick={handleResend}
-              className="text-[#2460F5] text-sm font-medium text-center cursor-pointer"
+              className={`text-[#2460F5] text-sm font-medium text-center ${resendLoading ? 'opacity-75 cursor-not-allowed' : 'cursor-pointer'}`}
             >
-              Resend OTP
+              {resendLoading ? 'Resending...' : 'Resend OTP'}
             </p>
           )}
         </div>

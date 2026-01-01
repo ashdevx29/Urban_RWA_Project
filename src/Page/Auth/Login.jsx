@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 import leftImg from "../../assets/Auth/auth.png";
 import rightBg from "../../assets/Auth/right-bg.png";
@@ -7,6 +8,8 @@ import logo from "../../assets/logo/Urban RWA Token/Urban RWA Token logo 3.png";
 
 import { LiaEye } from "react-icons/lia";
 import { FaAt } from "react-icons/fa";
+
+import { baseUrl } from "../../config/config";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -16,6 +19,9 @@ export default function Login() {
   const [remember, setRemember] = useState(false);
 
   const [errors, setErrors] = useState({});
+  const [formMessage, setFormMessage] = useState("");
+  const [formSuccess, setFormSuccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
 
   const validate = () => {
@@ -31,14 +37,43 @@ export default function Login() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
 
-    setShowPopup(true);
-    setTimeout(() => {
-      navigate("/login-otp");
-    }, 2000);
+    const data = {
+      email,
+      password,
+    };
+
+    setIsLoading(true);
+    setFormMessage("");
+    setFormSuccess(false);
+
+    try {
+      const response = await axios.post(`${baseUrl}/api/auth/login`, data);
+      const result = response.data;
+
+      setFormSuccess(true);
+      setFormMessage(result.message || "Login OTP sent to your email.");
+
+      setShowPopup(true);
+      setTimeout(() => {
+        navigate("/login-otp", { state: { email } });
+      }, 2000);
+    } catch (error) {
+      setFormSuccess(false);
+      if (error.response?.status === 403) {
+        setFormMessage("Please verify your email first.");
+      } else if (error.response?.status === 401) {
+        setFormMessage("Invalid credentials.");
+      } else {
+        setFormMessage(error.response?.data?.message || "Login failed. Please try again.");
+      }
+      console.error("Login error:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -77,6 +112,20 @@ export default function Login() {
             Welcome back! <br />
             Access your account and manage your digital assets seamlessly.
           </p>
+
+          {/* MESSAGE BOX */}
+          {formMessage && (
+            <div
+              className={`mb-4 px-4 py-3 rounded-md text-sm font-medium
+                ${
+                  formSuccess
+                    ? "bg-green-100 text-green-700 border border-green-300"
+                    : "bg-red-100 text-red-700 border border-red-300"
+                }`}
+            >
+              {formMessage}
+            </div>
+          )}
 
           <form className="space-y-4" onSubmit={handleSubmit}>
 
@@ -143,15 +192,17 @@ export default function Login() {
             {/* BUTTON */}
             <button
               type="submit"
-              className="
+              disabled={isLoading}
+              className={`
                 w-full h-12 rounded-md mt-8
                 bg-gradient-to-r from-[#2460F5] to-[#3B1DDA]
                 hover:from-[#1E4ED8] hover:to-[#2E16B8]
                 text-white font-medium
                 transition-all duration-300
-              "
+                ${isLoading ? 'opacity-75 cursor-not-allowed' : ''}
+              `}
             >
-              Sign In
+              {isLoading ? 'Signing In...' : 'Sign In'}
             </button>
 
             {/* SIGN UP */}

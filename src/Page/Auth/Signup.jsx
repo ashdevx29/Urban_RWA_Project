@@ -55,7 +55,6 @@ export default function Signup() {
   const validate = () => {
     let newErrors = {};
 
-    if (!form.referral) newErrors.referral = "Referral Id is required";
     if (!form.firstName) newErrors.firstName = "First name is required";
     if (!form.lastName) newErrors.lastName = "Last name is required";
 
@@ -104,7 +103,7 @@ export default function Signup() {
     }
 
     const data = {
-      sponsor_id: form.referral,
+      sponsor_id: form.referral || "URWA00001",
       first_name: form.firstName,
       last_name: form.lastName,
       country: form.country,
